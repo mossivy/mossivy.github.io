@@ -1,0 +1,117 @@
+body {AA
+    margin: 0;
+}
+
+.sectionOne {
+    padding-top: 80px;
+    padding-bottom: 80px;
+    background-color: #7D4F50;
+    color: #F9EAE1;
+    font-size: large;
+    text-align: center;
+}
+
+.sectionTwo {
+    padding: 40px;
+    color: rgb(102, 138, 90);
+    font-size: 80%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    text-align: center;
+
+}
+
+.sectionThree {
+    column-count: 2;
+    text-align: center;
+}
+
+.sectionThree > ul {
+    list-style: none;
+    float: center;
+    padding-left: 0px;
+}
+
+.leadership {
+    column-count: 2;
+}
+.leadership > dl {
+    float: center;
+    padding-left: 300px;
+    padding-right: 250px;
+}
+
+.skill {
+    column-count: 2;
+    text-align: center;
+}
+
+.skill > dl {
+    float: left;
+    padding-left:300px;
+    
+}
+
+.bottom {
+    text-align: center;
+    background-color: #7D4F50;
+    color: #F9EAE1;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.leftImage {
+    position: absolute;
+    left: 100px;
+    top:  20px;
+    border-radius: 20%;
+}
+
+.rightImage {
+    position: absolute;
+    right: 100px;
+    top: 20px;
+    border-radius: 20%;
+}
+
+.card {
+    margin: auto;
+    width: 300px;
+    padding: 10px;
+    text-align: center;
+    background-color: #D1BE9C;
+    box-shadow: 5px 5px 2px;
+}
+
+hr {
+    border-style: dotted dashed;
+    border-color: gray;
+}
+
+h1 {
+    margin-top: 0px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+p {
+     font-family: 'Roboto', sans-serif;
+}
+h2 {
+    text-align: center;
+}
+h3 {
+    text-align: center;
+}
+
+a {
+    text-decoration: none;
+    color: #FF0000;
+}
+
+a:hover {
+    color: gold;
+}
+BB
+B
