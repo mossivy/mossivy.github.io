@@ -1,77 +1,440 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-   <head>
-      <meta charset="utf-8" />
-      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <meta name="description" content="" />
-      <meta name="author" content="" />
-      <title>Echoes - Free HTML Bootstrap Template</title>
-      <!-- Css -->
-      <link href="css/bootstrap.css" rel="stylesheet" />
-      <link href="css/style.css" rel="stylesheet" />
-   </head>
-   <body>
-      <nav class="navbar navbar-default navbar-fixed-top">
-         <div class="col-md-12">
-            <div class="nav">
-               <button class="btn-nav">
-                  <span class="icon-bar inverted top"></span>
-                  <span class="icon-bar inverted middle"></span>
-                  <span class="icon-bar inverted bottom"></span>
-               </button>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethical AI Use | Dr. Jessica Lee Joyner</title>
+    <meta name="author" content="Created for Jessica Lee Joyner, PhD - Syllabus Quiz">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; background: #0a0a0a; }
+        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
+        .gradient-text { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: gradient-shift 3s ease infinite; background-size: 200% 200%; }
+        @keyframes gradient-shift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        .card-3d { transform-style: preserve-3d; transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
+        .card-3d:hover { transform: translateY(-15px) scale(1.02); box-shadow: 0 30px 60px rgba(102, 126, 234, 0.4); }
+        .hero-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); background-size: 400% 400%; animation: gradient-animation 15s ease infinite; }
+        @keyframes gradient-animation { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        .float { animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+        .glow { box-shadow: 0 0 20px rgba(102, 126, 234, 0.5), 0 0 40px rgba(102, 126, 234, 0.3); }
+        html { scroll-behavior: smooth; }
+        .content-layer { position: relative; z-index: 1; }
+        .neon-btn { position: relative; overflow: hidden; transition: all 0.3s; }
+        .neon-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); transition: left 0.5s; }
+        .neon-btn:hover::before { left: 100%; }
+        .fade-in { opacity: 0; transform: translateY(50px); transition: all 0.8s; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+        nav { backdrop-filter: blur(20px); background: rgba(10, 10, 10, 0.8); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .icon-3d { transition: all 0.3s; filter: drop-shadow(0 4px 8px rgba(102, 126, 234, 0.3)); }
+        .icon-3d:hover { transform: scale(1.2); filter: drop-shadow(0 8px 16px rgba(102, 126, 234, 0.6)); }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .pulse { animation: pulse 2s ease-in-out infinite; }
+    </style>
+</head>
+<body class="bg-black text-white">
+    <div id="canvas-container"></div>
+    
+    <div class="content-layer">
+        <nav class="fixed top-0 w-full z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-brain text-3xl gradient-text icon-3d"></i>
+                        <div>
+                            <span class="text-xl font-bold text-white">Ethical AI Guide</span>
+                            <span class="text-xs text-gray-400 block">Dr. Jessica Lee Joyner</span>
+                        </div>
+                    </div>
+                    <div class="hidden md:flex space-x-8">
+                        <a href="#home" class="text-gray-300 hover:text-white transition">Home</a>
+                        <a href="#principles" class="text-gray-300 hover:text-white transition">Principles</a>
+                        <a href="#guidelines" class="text-gray-300 hover:text-white transition">Guidelines</a>
+                        <a href="#examples" class="text-gray-300 hover:text-white transition">Examples</a>
+                        <a href="#resources" class="text-gray-300 hover:text-white transition">Resources</a>
+                    </div>
+                    <button id="mobile-menu-btn" class="md:hidden text-white"><i class="fas fa-bars text-2xl"></i></button>
+                </div>
             </div>
-            <a class="navbar-brand" href="index.html">
-               <img class="logo" src="img/logo.png" alt="logo" />
-            </a>
-            <div class="nav-content hideNav hidden">
-               <ul class="nav-list vcenter">
-                  <li class="nav-item">
-                     <a class="item-anchor" href="index.html">Home</a>
-                  </li>
-                  <li class="nav-item">
-                     <a class="item-anchor" href="about.html">Story</a>
-                  </li>
-                  <li class="nav-item">
-                     <a class="item-anchor" href="achievements.html"
-                        >Achievements</a
-                     >
-                  </li>
-                  <li class="nav-item">
-                     <a class="item-anchor" href="from_the_field.html"
-                        >From The Field</a
-                     >
-                  </li>
-               </ul>
+            <div id="mobile-menu" class="hidden md:hidden glass border-t border-white/10 px-4 py-3 space-y-3">
+                <a href="#home" class="block text-gray-300 hover:text-white">Home</a>
+                <a href="#principles" class="block text-gray-300 hover:text-white">Principles</a>
+                <a href="#guidelines" class="block text-gray-300 hover:text-white">Guidelines</a>
+                <a href="#examples" class="block text-gray-300 hover:text-white">Examples</a>
+                <a href="#resources" class="block text-gray-300 hover:text-white">Resources</a>
             </div>
-         </div>
-      </nav>
-      <!-- Header -->
-      <div class="span12">
-         <div class="col-md-6 no-gutter text-center fill">
-            <div class="vcenter">
-               <h2>A Life in Design</h2>
-               <a href="about.html"> See the Story</a>
+        </nav>
+
+        <section id="home" class="min-h-screen flex items-center justify-center relative overflow-hidden pt-16">
+            <div class="absolute inset-0 hero-gradient opacity-30"></div>
+            <div class="max-w-7xl mx-auto px-4 text-center relative z-10">
+                <div class="float">
+                    <h1 class="text-5xl md:text-7xl font-black mb-6 gradient-text">Ethical AI Use in Academic Settings</h1>
+                    <p class="text-xl md:text-2xl mb-8 text-gray-300 max-w-3xl mx-auto">Research-based guidance for students navigating AI tools in coursework</p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4 mb-12">
+                        <a href="#principles" class="neon-btn bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-bold glow hover:scale-105 transition">Get Started</a>
+                        <a href="#examples" class="neon-btn glass border-2 border-white/20 text-white px-8 py-4 rounded-xl font-bold hover:bg-white/10 hover:scale-105 transition">View Examples</a>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+                        <div class="glass rounded-2xl p-8 card-3d">
+                            <div class="text-5xl font-black mb-3 gradient-text pulse">96</div>
+                            <div class="text-sm text-gray-300">Research Papers</div>
+                        </div>
+                        <div class="glass rounded-2xl p-8 card-3d">
+                            <div class="text-5xl font-black mb-3 gradient-text pulse">2023-2026</div>
+                            <div class="text-sm text-gray-300">Research Period</div>
+                        </div>
+                        <div class="glass rounded-2xl p-8 card-3d">
+                            <div class="text-5xl font-black mb-3 gradient-text pulse">6</div>
+                            <div class="text-sm text-gray-300">Core Principles</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-         </div>
-         <div class="col-md-6 no-gutter text-center">
-            <div id="header" data-speed="2" data-type="background">
-               <div id="headslide" class="carousel slide" data-ride="carousel">
-                  <div class="carousel-inner" role="listbox">
-                     <div class="item active">
-                        <img src="img/1.jpg" alt="Slide" />
-                     </div>
-                  </div>
-               </div>
+        </section>
+
+        <section class="py-16 relative fade-in">
+            <div class="max-w-5xl mx-auto px-4">
+                <div class="glass rounded-2xl p-8 border-l-4 border-purple-500 card-3d">
+                    <h2 class="text-3xl font-bold text-white mb-4 flex items-center">
+                        <i class="fas fa-lightbulb text-yellow-400 mr-3 icon-3d"></i>Quick Summary
+                    </h2>
+                    <p class="text-lg text-gray-300 leading-relaxed">Students should treat AI as a <strong class="text-white">supervised assistant</strong>: use it for generation, feedback, and editing while retaining authorship, disclosing tool use, and following institutional rules.</p>
+                </div>
             </div>
-         </div>
-      </div>
-      <div style="clear: both"></div>
-      <!-- script -->
-      <script src="js/jquery.js"></script>
-      <script src="js/bootstrap.min.js"></script>
-      <script src="js/menu-color.js"></script>
-      <script src="js/modernizr.js"></script>
-      <script src="js/script.js"></script>
-   </body>
+        </section>
+
+        <section id="principles" class="py-20 relative fade-in">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl md:text-5xl font-black text-white mb-4 gradient-text">Core Ethical Principles</h2>
+                    <p class="text-xl text-gray-400">AI use should be grounded in clear ethical values</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="glass rounded-2xl p-8 card-3d hover:border-blue-500 border border-transparent transition">
+                        <div class="bg-gradient-to-br from-blue-600 to-blue-800 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 icon-3d">
+                            <i class="fas fa-eye text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Transparency</h3>
+                        <p class="text-gray-400">State where and how AI was used. Clear disclosure preserves trust.</p>
+                    </div>
+                    <div class="glass rounded-2xl p-8 card-3d hover:border-purple-500 border border-transparent transition">
+                        <div class="bg-gradient-to-br from-purple-600 to-purple-800 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 icon-3d">
+                            <i class="fas fa-shield-alt text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Academic Integrity</h3>
+                        <p class="text-gray-400">Preserve authorship. You remain responsible for all work.</p>
+                    </div>
+                    <div class="glass rounded-2xl p-8 card-3d hover:border-green-500 border border-transparent transition">
+                        <div class="bg-gradient-to-br from-green-600 to-green-800 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 icon-3d">
+                            <i class="fas fa-graduation-cap text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Skill Development</h3>
+                        <p class="text-gray-400">Use AI to support learning, not replace critical thinking.</p>
+                    </div>
+                    <div class="glass rounded-2xl p-8 card-3d hover:border-yellow-500 border border-transparent transition">
+                        <div class="bg-gradient-to-br from-yellow-600 to-yellow-800 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 icon-3d">
+                            <i class="fas fa-balance-scale text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Equity</h3>
+                        <p class="text-gray-400">Consider unequal access and avoid unfair advantages.</p>
+                    </div>
+                    <div class="glass rounded-2xl p-8 card-3d hover:border-red-500 border border-transparent transition">
+                        <div class="bg-gradient-to-br from-red-600 to-red-800 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 icon-3d">
+                            <i class="fas fa-user-check text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Human Oversight</h3>
+                        <p class="text-gray-400">Always verify and take responsibility for AI content.</p>
+                    </div>
+                    <div class="glass rounded-2xl p-8 card-3d hover:border-indigo-500 border border-transparent transition">
+                        <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 icon-3d">
+                            <i class="fas fa-gavel text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4">Governance</h3>
+                        <p class="text-gray-400">Follow institutional policies. Ask when unsure.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="guidelines" class="py-20 relative fade-in">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl md:text-5xl font-black text-white mb-4 gradient-text">What's Acceptable?</h2>
+                    <p class="text-xl text-gray-400">Distinguish supportive uses from substitutions</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="glass rounded-2xl p-8 border-t-4 border-green-500 card-3d">
+                        <div class="flex items-center mb-6">
+                            <div class="bg-green-500/20 text-green-400 w-16 h-16 rounded-full flex items-center justify-center mr-4 icon-3d">
+                                <i class="fas fa-check text-3xl"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold text-white">Permitted</h3>
+                        </div>
+                        <ul class="space-y-4">
+                            <li class="flex items-start group">
+                                <i class="fas fa-check-circle text-green-400 mt-1 mr-3 group-hover:scale-125 transition"></i>
+                                <span class="text-gray-300"><strong class="text-white">Idea generation:</strong> Brainstorming and outlining</span>
+                            </li>
+                            <li class="flex items-start group">
+                                <i class="fas fa-check-circle text-green-400 mt-1 mr-3 group-hover:scale-125 transition"></i>
+                                <span class="text-gray-300"><strong class="text-white">Grammar & style:</strong> Editing for clarity</span>
+                            </li>
+                            <li class="flex items-start group">
+                                <i class="fas fa-check-circle text-green-400 mt-1 mr-3 group-hover:scale-125 transition"></i>
+                                <span class="text-gray-300"><strong class="text-white">Concept explanation:</strong> Understanding difficult topics</span>
+                            </li>
+                            <li class="flex items-start group">
+                                <i class="fas fa-check-circle text-green-400 mt-1 mr-3 group-hover:scale-125 transition"></i>
+                                <span class="text-gray-300"><strong class="text-white">Feedback:</strong> Suggestions while you're the author</span>
+                            </li>
+                            <li class="flex items-start group">
+                                <i class="fas fa-check-circle text-green-400 mt-1 mr-3 group-hover:scale-125 transition"></i>
+                                <span class="text-gray-300"><strong class="text-white">Research:</strong> Finding sources with verification</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="glass rounded-2xl p-8 border-t-4 border-red-500 card-3d">
+                        <div class="flex items-center mb-6">
+                            <div class="bg-red-500/20 text-red-400 w-16 h-16 rounded-full flex items-center justify-center mr-4 icon-3d">
+                                <i class="fas fa-times text-3xl"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold text-white">Prohibited</h3>
+                        </div>
+                        <ul class="space-y-4">
+                            <li class="flex items-start group">
+                                <i class="fas fa-times-circle text-red-400 mt-1 mr-3 group-hover:scale-125 transition"></i>
+                                <span class="text-gray-300"><strong class="text-white">Direct submission:</strong> AI essays as your own</span>
+                            </li>
+                            <li class="flex items-start group">
+                                <i class="fas fa-times-circle text-red-400 mt-1 mr-3 group-hover:scale-125 transition"></i>
+                                <span class="text-gray-300"><strong class="text-white">Fabrication:</strong> Fake citations without checking</span>
+                            </li>
+                            <li class="flex items-start group">
+                                <i class="fas fa-times-circle text-red-400 mt-1 mr-3 group-hover:scale-125 transition"></i>
+                                <span class="text-gray-300"><strong class="text-white">Test bypass:</strong> AI for unaided assessments</span>
+                            </li>
+                            <li class="flex items-start group">
+                                <i class="fas fa-times-circle text-red-400 mt-1 mr-3 group-hover:scale-125 transition"></i>
+                                <span class="text-gray-300"><strong class="text-white">Hidden paraphrasing:</strong> Minor edits to conceal</span>
+                            </li>
+                            <li class="flex items-start group">
+                                <i class="fas fa-times-circle text-red-400 mt-1 mr-3 group-hover:scale-125 transition"></i>
+                                <span class="text-gray-300"><strong class="text-white">No verification:</strong> Unvetted AI output</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="examples" class="py-20 relative fade-in">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl md:text-5xl font-black text-white mb-4 gradient-text">Assignment Guidance</h2>
+                    <p class="text-xl text-gray-400">Practical recommendations for different work types</p>
+                </div>
+                <div class="glass rounded-2xl overflow-hidden card-3d">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gradient-to-r from-purple-900 to-pink-900">
+                                <tr>
+                                    <th class="px-6 py-5 text-left text-sm font-bold text-white">Assignment</th>
+                                    <th class="px-6 py-5 text-left text-sm font-bold text-white">Ethical Uses</th>
+                                    <th class="px-6 py-5 text-left text-sm font-bold text-white">Not Acceptable</th>
+                                    <th class="px-6 py-5 text-left text-sm font-bold text-white">Key Steps</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/10">
+                                <tr class="hover:bg-white/5 transition">
+                                    <td class="px-6 py-4"><i class="fas fa-calculator text-blue-400 mr-3"></i><span class="font-semibold text-white">Problem Sets</span></td>
+                                    <td class="px-6 py-4 text-gray-300">Explain concepts during revision</td>
+                                    <td class="px-6 py-4 text-gray-300">Generate answers for submissions</td>
+                                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-sm bg-blue-500/20 text-blue-300">Keep logs</span></td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition">
+                                    <td class="px-6 py-4"><i class="fas fa-file-alt text-purple-400 mr-3"></i><span class="font-semibold text-white">Essays</span></td>
+                                    <td class="px-6 py-4 text-gray-300">Brainstorming, editing</td>
+                                    <td class="px-6 py-4 text-gray-300">Submit AI drafts as yours</td>
+                                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-sm bg-purple-500/20 text-purple-300">Document role</span></td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition">
+                                    <td class="px-6 py-4"><i class="fas fa-flask text-green-400 mr-3"></i><span class="font-semibold text-white">Lab Reports</span></td>
+                                    <td class="px-6 py-4 text-gray-300">Summarize methods</td>
+                                    <td class="px-6 py-4 text-gray-300">Data interpretation/fabrication</td>
+                                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-sm bg-green-500/20 text-green-300">Verify sources</span></td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition">
+                                    <td class="px-6 py-4"><i class="fas fa-presentation text-red-400 mr-3"></i><span class="font-semibold text-white">Presentations</span></td>
+                                    <td class="px-6 py-4 text-gray-300">Draft speaker notes</td>
+                                    <td class="px-6 py-4 text-gray-300">Content you can't defend</td>
+                                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-sm bg-red-500/20 text-red-300">Practice defense</span></td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition">
+                                    <td class="px-6 py-4"><i class="fas fa-palette text-yellow-400 mr-3"></i><span class="font-semibold text-white">Creative Work</span></td>
+                                    <td class="px-6 py-4 text-gray-300">Ideation, prototypes</td>
+                                    <td class="px-6 py-4 text-gray-300">Pass off as wholly yours</td>
+                                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-sm bg-yellow-500/20 text-yellow-300">Attribute assets</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="resources" class="py-20 relative fade-in">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl md:text-5xl font-black text-white mb-4 gradient-text">Research Foundation</h2>
+                    <p class="text-xl text-gray-400">Based on 96 peer-reviewed papers (2023-2026)</p>
+                </div>
+                <div class="glass rounded-2xl p-8 card-3d">
+                    <h3 class="text-2xl font-bold text-white mb-6 flex items-center">
+                        <i class="fas fa-book text-purple-400 mr-3"></i>Key Research Sources
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="border-l-4 border-purple-500 pl-4">
+                            <p class="text-sm text-gray-400">Koos & Wachsmann (2023)</p>
+                            <p class="font-semibold text-white">ChatGPT Impact on Legal Examinations</p>
+                        </div>
+                        <div class="border-l-4 border-blue-500 pl-4">
+                            <p class="text-sm text-gray-400">Rao (2025)</p>
+                            <p class="font-semibold text-white">Responsible AI Use Policies</p>
+                        </div>
+                        <div class="border-l-4 border-green-500 pl-4">
+                            <p class="text-sm text-gray-400">Shanto et al. (2023)</p>
+                            <p class="font-semibold text-white">PAIGE Framework for Integrity</p>
+                        </div>
+                        <div class="border-l-4 border-yellow-500 pl-4">
+                            <p class="text-sm text-gray-400">Kővári (2025)</p>
+                            <p class="font-semibold text-white">Best Practices to Combat Plagiarism</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="py-12 bg-black/50 border-t border-white/10">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center text-gray-400">
+                    <p class="mb-2">&copy; 2026 Ethical AI Guide. Research-based educational resource.</p>
+                    <p class="text-sm">Developed for <strong class="text-white">Jessica Lee Joyner, PhD</strong> - Syllabus Quiz Resource</p>
+                </div>
+            </div>
+        </footer>
+
+        <button id="scroll-top" class="fixed bottom-8 right-8 bg-purple-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-purple-700 transition opacity-0 pointer-events-none glow">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+    </div>
+
+    <script>
+        // Three.js 3D Background
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
+        const material = new THREE.MeshBasicMaterial({ color: 0x667eea, wireframe: true });
+        const torus = new THREE.Mesh(geometry, material);
+        scene.add(torus);
+
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 5000;
+        const posArray = new Float32Array(particlesCount * 3);
+        for(let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 100;
+        }
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMaterial = new THREE.PointsMaterial({ size: 0.005, color: 0x667eea });
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        camera.position.z = 30;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            torus.rotation.x += 0.01;
+            torus.rotation.y += 0.005;
+            torus.rotation.z += 0.01;
+            particlesMesh.rotation.y += 0.001;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        // Close mobile menu on link click
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.add('hidden');
+            });
+        });
+
+        // Scroll to top button
+        const scrollTopBtn = document.getElementById('scroll-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                scrollTopBtn.classList.add('opacity-0', 'pointer-events-none');
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Fade-in on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Active nav highlighting
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('nav a[href^="#"]');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('text-white', 'font-bold');
+                link.classList.add('text-gray-300');
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.classList.remove('text-gray-300');
+                    link.classList.add('text-white', 'font-bold');
+                }
+            });
+        });
+    </script>
+</body>
 </html>
