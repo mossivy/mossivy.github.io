@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Georgia Wild — Species Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #1a2e1a;
+    --moss: #3d5c2e;
+    --fern: #5a7a45;
+    --sage: #8aaa70;
+    --mist: #c8d9b8;
+    --cream: #f5f0e8;
+    --amber: #d4882a;
+    --rust: #b5461e;
+    --white: #fdfaf5;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--forest);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  header {
+    position: relative;
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+    background: linear-gradient(180deg, #0c1a0c 0%, var(--forest) 100%);
+    border-bottom: 1px solid rgba(138,170,112,0.2);
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(90,122,69,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 0.75rem;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1;
+    color: var(--white);
+    letter-spacing: -0.02em;
+  }
+  h1 span { color: var(--sage); font-style: italic; }
+  .header-sub { margin-top: 0.75rem; font-size: 0.95rem; color: var(--mist); opacity: 0.75; font-weight: 300; }
+
+  .search-section { padding: 2rem 1.5rem 1rem; max-width: 700px; margin: 0 auto; }
+  .search-row { display: flex; gap: 0.75rem; align-items: stretch; }
+  .search-input {
+    flex: 1; padding: 0.85rem 1.25rem;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(138,170,112,0.3);
+    border-radius: 6px; color: var(--white);
+    font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+    outline: none; transition: border-color 0.2s, background 0.2s;
+  }
+  .search-input::placeholder { color: rgba(200,217,184,0.4); }
+  .search-input:focus { border-color: var(--sage); background: rgba(255,255,255,0.1); }
+  .search-btn {
+    padding: 0.85rem 1.6rem; background: var(--moss); color: var(--white);
+    border: none; border-radius: 6px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500;
+    cursor: pointer; transition: background 0.2s, transform 0.1s; white-space: nowrap;
+  }
+  .search-btn:hover { background: var(--fern); }
+  .search-btn:active { transform: scale(0.98); }
+
+  .filter-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.85rem; justify-content: center; }
+  .filter-btn {
+    padding: 0.4rem 1rem; border-radius: 99px;
+    border: 1px solid rgba(138,170,112,0.35);
+    background: transparent; color: var(--mist);
+    font-family: 'DM Sans', sans-serif; font-size: 0.78rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--moss); border-color: var(--moss); color: var(--white);
+  }
+
+  .section-label {
+    text-align: center; padding: 1.5rem 1rem 0.5rem;
+    color: var(--sage); font-size: 0.72rem;
+    letter-spacing: 0.25em; text-transform: uppercase; font-weight: 500;
+  }
+  .section-label::before, .section-label::after {
+    content: ''; display: inline-block;
+    width: 40px; height: 1px;
+    background: rgba(138,170,112,0.4);
+    vertical-align: middle; margin: 0 1rem;
+  }
+
+  .status {
+    text-align: center; padding: 1rem;
+    color: var(--sage); font-size: 0.9rem;
+    min-height: 2rem;
+    display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+  }
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(138,170,112,0.3);
+    border-top-color: var(--sage);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+    padding: 0.5rem 1.5rem 3rem;
+    max-width: 1400px; margin: 0 auto;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(138,170,112,0.15);
+    border-radius: 12px;
+    overflow: hidden; cursor: pointer;
+    transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    animation: fadeUp 0.4s ease both;
+    position: relative;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(138,170,112,0.4);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .rank-badge {
+    position: absolute; top: 0.75rem; left: 0.75rem;
+    background: rgba(10,20,10,0.85); color: var(--amber);
+    padding: 0.3rem 0.65rem; border-radius: 4px;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;
+    backdrop-filter: blur(4px); z-index: 2;
+  }
+
+  .card-img {
+    width: 100%; height: 210px;
+    object-fit: cover; display: block;
+    background: rgba(255,255,255,0.04);
+  }
+  .card-img-placeholder {
+    width: 100%; height: 210px;
+    background: linear-gradient(135deg, #1a2e1a, #2a3d2a);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3.5rem;
+  }
+
+  .card-body { padding: 1.1rem 1.25rem 1.25rem; }
+  .card-tag {
+    display: inline-block; padding: 0.2rem 0.65rem;
+    border-radius: 4px;
+    background: rgba(90,122,69,0.25); color: var(--sage);
+    font-size: 0.68rem; font-weight: 500;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .card-common {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem; font-weight: 700;
+    color: var(--white); line-height: 1.2;
+    margin-bottom: 0.2rem;
+  }
+  .card-sci {
+    font-size: 0.8rem; color: var(--sage);
+    font-style: italic; margin-bottom: 0.85rem;
+  }
+  .card-meta { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .meta-pill {
+    padding: 0.25rem 0.7rem; border-radius: 4px;
+    background: rgba(255,255,255,0.06);
+    font-size: 0.72rem; color: var(--mist);
+    display: flex; align-items: center; gap: 0.3rem;
+  }
+
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(8,16,8,0.88); z-index: 100;
+    overflow-y: auto; backdrop-filter: blur(4px); padding: 1.5rem;
+  }
+  .modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
+
+  .modal {
+    background: #162016;
+    border: 1px solid rgba(138,170,112,0.25);
+    border-radius: 16px; width: 100%; max-width: 820px;
+    overflow: hidden; animation: modalIn 0.3s ease;
+    position: relative; margin: auto;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    width: 36px; height: 36px;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(138,170,112,0.3);
+    border-radius: 50%; color: var(--mist);
+    font-size: 1.1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10; transition: background 0.2s;
+  }
+  .modal-close:hover { background: rgba(90,122,69,0.4); }
+
+  .modal-hero { position: relative; height: 280px; overflow: hidden; }
+  .modal-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .modal-hero-placeholder {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #1a2e1a, #0c1a0c);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 6rem;
+  }
+  .modal-hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(22,32,22,1) 0%, rgba(22,32,22,0.3) 50%, transparent 100%);
+  }
+  .modal-title-block { position: absolute; bottom: 1.25rem; left: 1.5rem; right: 1.5rem; }
+  .modal-common {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    font-weight: 900; color: var(--white); line-height: 1.1;
+  }
+  .modal-sci { font-size: 0.95rem; color: var(--sage); font-style: italic; margin-top: 0.2rem; }
+
+  .modal-content { padding: 1.5rem; }
+  .modal-sections { display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .section-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(138,170,112,0.12);
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+  }
+  .section-header {
+    display: flex; align-items: center; gap: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+  .section-icon { font-size: 1.1rem; width: 28px; text-align: center; }
+  .section-title {
+    font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--sage);
+  }
+  .section-body { font-size: 0.9rem; color: var(--mist); line-height: 1.65; }
+  .section-body b { color: var(--white); font-weight: 500; }
+  .section-body i.label {
+    color: var(--sage); font-style: normal;
+    font-size: 0.72rem; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: block; margin-top: 0.65rem; margin-bottom: 0.2rem;
+    font-weight: 500;
+  }
+  .section-body i.label:first-child { margin-top: 0; }
+
+  .section-loading {
+    display: flex; align-items: center; gap: 0.5rem;
+    color: var(--sage); font-size: 0.85rem;
+    font-style: italic; opacity: 0.7;
+  }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  @media (max-width: 600px) {
+    .two-col { grid-template-columns: 1fr; }
+    .grid { grid-template-columns: 1fr; padding: 0.5rem 1rem 2rem; }
+  }
+
+  .modal-footer {
+    padding: 1rem 1.5rem 1.5rem;
+    display: flex; gap: 0.75rem; flex-wrap: wrap;
+    border-top: 1px solid rgba(138,170,112,0.12);
+    margin-top: 0.5rem;
+  }
+
+  .ext-link {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.5rem 1rem; border-radius: 6px;
+    font-size: 0.82rem; font-weight: 500;
+    text-decoration: none; transition: background 0.2s;
+  }
+  .ext-link.obs-badge {
+    background: rgba(90,122,69,0.2);
+    border: 1px solid rgba(90,122,69,0.3);
+    color: var(--sage);
+  }
+  .ext-link.amber {
+    background: rgba(212,136,42,0.15);
+    border: 1px solid rgba(212,136,42,0.3);
+    color: var(--amber);
+  }
+  .ext-link.amber:hover { background: rgba(212,136,42,0.25); }
+  .ext-link.green {
+    background: rgba(138,170,112,0.15);
+    border: 1px solid rgba(138,170,112,0.3);
+    color: var(--sage);
+  }
+  .ext-link.green:hover { background: rgba(138,170,112,0.25); }
+
+  .empty-state {
+    text-align: center; padding: 4rem 2rem;
+    color: var(--sage); grid-column: 1/-1;
+  }
+  .empty-state .big-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.5; }
+  .empty-state p { color: var(--mist); opacity: 0.6; margin-top: 0.5rem; font-size: 0.9rem; }
+
+  .threat-bar {
+    display: flex; align-items: center; gap: 0.6rem;
+    margin-bottom: 0.6rem; flex-wrap: wrap;
+  }
+  .threat-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--rust); flex-shrink: 0;
+  }
+  .threat-dot.low { background: var(--sage); }
+  .threat-dot.medium { background: var(--amber); }
+  .threat-dot.high { background: var(--rust); }
+  .threat-dot.unknown { background: #666; }
+
+  .prevalence-bar {
+    margin-top: 0.6rem; height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px; overflow: hidden; position: relative;
+  }
+  .prevalence-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--moss), var(--sage));
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-eyebrow">Powered by iNaturalist & Wikipedia</div>
+  <h1>Georgia <span>Wild</span></h1>
+  <div class="header-sub">Explore the flora & fauna of the Peach State</div>
+</header>
+
+<div class="search-section">
+  <div class="search-row">
+    <input class="search-input" id="searchInput" type="text" placeholder="Search species, e.g. white-tailed deer, eastern box turtle…" />
+    <button class="search-btn" onclick="search()">Search</button>
+  </div>
+  <div class="filter-row">
+    <button class="filter-btn active" data-taxa="all" onclick="setTaxa(this,'all')">All</button>
+    <button class="filter-btn" data-taxa="Mammalia" onclick="setTaxa(this,'Mammalia')">🦌 Mammals</button>
+    <button class="filter-btn" data-taxa="Aves" onclick="setTaxa(this,'Aves')">🦅 Birds</button>
+    <button class="filter-btn" data-taxa="Reptilia" onclick="setTaxa(this,'Reptilia')">🐍 Reptiles</button>
+    <button class="filter-btn" data-taxa="Amphibia" onclick="setTaxa(this,'Amphibia')">🐸 Amphibians</button>
+    <button class="filter-btn" data-taxa="Insecta" onclick="setTaxa(this,'Insecta')">🦋 Insects</button>
+    <button class="filter-btn" data-taxa="Plantae" onclick="setTaxa(this,'Plantae')">🌿 Plants</button>
+    <button class="filter-btn" data-taxa="Arachnida" onclick="setTaxa(this,'Arachnida')">🕷 Arachnids</button>
+  </div>
+</div>
+
+<div class="section-label" id="sectionLabel">Most Observed in Georgia</div>
+<div class="status" id="status"></div>
+<div class="grid" id="grid"></div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-hero" id="modalHero"></div>
+    <div class="modal-content">
+      <div class="modal-sections" id="modalSections"></div>
+      <div class="modal-footer" id="modalFooter"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const GEORGIA_PLACE_ID = 12;
+let currentTaxa = 'all';
+
+window.addEventListener('DOMContentLoaded', () => loadTopSpecies());
+
+function setTaxa(btn, taxa) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentTaxa = taxa;
+  const q = document.getElementById('searchInput').value.trim();
+  if (q) search();
+  else loadTopSpecies();
+}
+
+function prettyTaxa(t) {
+  const map = { 'Mammalia':'Mammals','Aves':'Birds','Reptilia':'Reptiles','Amphibia':'Amphibians','Insecta':'Insects','Plantae':'Plants','Arachnida':'Arachnids' };
+  return map[t] || t;
+}
+
+async function loadTopSpecies() {
+  document.getElementById('sectionLabel').textContent =
+    currentTaxa === 'all'
+      ? 'Most Observed in Georgia'
+      : `Most Observed ${prettyTaxa(currentTaxa)} in Georgia`;
+  showStatus('loading', 'Fetching the most observed species in Georgia…');
+  document.getElementById('grid').innerHTML = '';
+
+  try {
+    let url = `https://api.inaturalist.org/v1/observations/species_counts?place_id=${GEORGIA_PLACE_ID}&per_page=24&verifiable=true`;
+    if (currentTaxa !== 'all') url += `&iconic_taxa=${currentTaxa}`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+    const results = (data.results || []).map(r => ({ ...r.taxon, ga_obs_count: r.count }));
+
+    if (results.length === 0) {
+      showStatus('empty', '');
+      document.getElementById('grid').innerHTML = `<div class="empty-state"><div class="big-icon">🌿</div><h3>No species found</h3><p>Try a different category.</p></div>`;
+      return;
+    }
+
+    showStatus('', '');
+    renderCards(results, true);
+  } catch (e) {
+    console.error(e);
+    showStatus('empty', 'Error fetching data. Please reload.');
+  }
+}
+
+async function search() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) { loadTopSpecies(); return; }
+
+  document.getElementById('sectionLabel').textContent = `Search Results: "${q}"`;
+  showStatus('loading', 'Searching iNaturalist…');
+  document.getElementById('grid').innerHTML = '';
+
+  try {
+    let url = `https://api.inaturalist.org/v1/taxa?q=${encodeURIComponent(q)}&per_page=24&order_by=observations_count&photos=true`;
+    if (currentTaxa !== 'all') url += `&iconic_taxa=${currentTaxa}`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+    const results = data.results || [];
+
+    if (results.length === 0) {
+      showStatus('empty', '');
+      document.getElementById('grid').innerHTML = `<div class="empty-state"><div class="big-icon">🔍</div><h3>No species found</h3><p>Try a different name or category filter.</p></div>`;
+      return;
+    }
+
+    showStatus('', '');
+    renderCards(results, false);
+  } catch (e) {
+    console.error(e);
+    showStatus('empty', 'Error fetching data. Please try again.');
+  }
+}
+
+function showStatus(type, msg) {
+  const el = document.getElementById('status');
+  if (type === 'loading') el.innerHTML = `<div class="spinner"></div><span>${msg}</span>`;
+  else if (type === 'empty') el.innerHTML = `<span>${msg}</span>`;
+  else el.innerHTML = '';
+}
+
+function renderCards(results, showRanks) {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  results.forEach((t, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.animationDelay = `${Math.min(i * 0.04, 0.6)}s`;
+    card.onclick = () => openModal(t);
+
+    const imgUrl = t.default_photo?.medium_url || t.default_photo?.url;
+    const commonName = t.preferred_common_name || t.name;
+    const sciName = t.name;
+    const taxonGroup = t.iconic_taxon_name || 'Species';
+    const emoji = getEmoji(t.iconic_taxon_name);
+    const gaCount = t.ga_obs_count != null ? t.ga_obs_count.toLocaleString() : null;
+    const globalCount = t.observations_count ? t.observations_count.toLocaleString() : '—';
+
+    card.innerHTML = `
+      ${showRanks ? `<div class="rank-badge">#${i + 1}</div>` : ''}
+      ${imgUrl
+        ? `<img class="card-img" src="${imgUrl}" alt="${commonName}" loading="lazy" onerror="this.outerHTML='<div class=\\'card-img-placeholder\\'>${emoji}</div>'">`
+        : `<div class="card-img-placeholder">${emoji}</div>`}
+      <div class="card-body">
+        <div class="card-tag">${taxonGroup}</div>
+        <div class="card-common">${commonName}</div>
+        <div class="card-sci">${sciName}</div>
+        <div class="card-meta">
+          ${gaCount ? `<div class="meta-pill">📍 ${gaCount} GA obs.</div>` : `<div class="meta-pill">👁 ${globalCount} obs.</div>`}
+          ${t.conservation_status ? `<div class="meta-pill">⚠ ${t.conservation_status.status_name || t.conservation_status.status}</div>` : ''}
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function getEmoji(taxon) {
+  const map = {
+    'Mammalia':'🦌','Aves':'🦅','Reptilia':'🐍','Amphibia':'🐸',
+    'Insecta':'🦋','Plantae':'🌿','Arachnida':'🕷','Actinopterygii':'🐟',
+    'Fungi':'🍄','Mollusca':'🐚','Animalia':'🐾'
+  };
+  return map[taxon] || '🌿';
+}
+
+// =================== MODAL ===================
+
+async function openModal(taxon) {
+  const overlay = document.getElementById('modalOverlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  const commonName = taxon.preferred_common_name || taxon.name;
+  const sciName = taxon.name;
+  const emoji = getEmoji(taxon.iconic_taxon_name);
+
+  const heroImg = taxon.default_photo?.large_url || taxon.default_photo?.medium_url || taxon.default_photo?.url;
+  document.getElementById('modalHero').innerHTML = `
+    ${heroImg
+      ? `<img src="${heroImg}" alt="${commonName}" onerror="this.outerHTML='<div class=\\'modal-hero-placeholder\\'>${emoji}</div>'">`
+      : `<div class="modal-hero-placeholder">${emoji}</div>`}
+    <div class="modal-hero-overlay"></div>
+    <div class="modal-title-block">
+      <div class="modal-common">${commonName}</div>
+      <div class="modal-sci">${sciName}</div>
+    </div>`;
+
+  document.getElementById('modalSections').innerHTML = getLoadingSections();
+  document.getElementById('modalFooter').innerHTML = '';
+
+  const [gaObsCount, taxonDetails] = await Promise.all([
+    fetchGAObsCount(taxon.id),
+    fetchTaxonDetails(taxon.id)
+  ]);
+
+  const fullTaxon = taxonDetails || taxon;
+  const wikiUrl = fullTaxon.wikipedia_url;
+  const wikiSections = wikiUrl ? await fetchWikipediaSections(wikiUrl) : null;
+
+  renderModalSections(fullTaxon, gaObsCount, wikiSections);
+  renderModalFooter(fullTaxon, gaObsCount);
+}
+
+async function fetchGAObsCount(taxonId) {
+  try {
+    const res = await fetch(`https://api.inaturalist.org/v1/observations?taxon_id=${taxonId}&place_id=${GEORGIA_PLACE_ID}&per_page=0`);
+    const data = await res.json();
+    return data.total_results || 0;
+  } catch (e) { return 0; }
+}
+
+async function fetchTaxonDetails(taxonId) {
+  try {
+    const res = await fetch(`https://api.inaturalist.org/v1/taxa/${taxonId}`);
+    const data = await res.json();
+    return data.results?.[0] || null;
+  } catch (e) { return null; }
+}
+
+async function fetchWikipediaSections(wikipediaUrl) {
+  try {
+    const match = wikipediaUrl.match(/\/wiki\/(.+)$/);
+    if (!match) return null;
+    const title = decodeURIComponent(match[1]);
+    const url = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts&titles=${encodeURIComponent(title)}&explaintext=1&exsectionformat=wiki&format=json&origin=*`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const pages = data.query?.pages || {};
+    const pageId = Object.keys(pages)[0];
+    const extract = pages[pageId]?.extract;
+    if (!extract) return null;
+    return parseSections(extract);
+  } catch (e) {
+    console.warn('Wikipedia fetch failed', e);
+    return null;
+  }
+}
+
+function parseSections(text) {
+  const sections = {};
+  const lines = text.split('\n');
+  let currentKey = '_intro';
+  let currentLines = [];
+
+  const commit = () => {
+    const joined = currentLines.join(' ').replace(/\s+/g, ' ').trim();
+    if (joined) sections[currentKey] = (sections[currentKey] ? sections[currentKey] + ' ' : '') + joined;
+  };
+
+  for (const line of lines) {
+    const m = line.match(/^(=+)\s*(.+?)\s*\1\s*$/);
+    if (m) {
+      commit();
+      currentKey = m[2].trim();
+      currentLines = [];
+    } else if (line.trim()) {
+      currentLines.push(line.trim());
+    }
+  }
+  commit();
+  return sections;
+}
+
+function findSection(sections, keywords) {
+  if (!sections) return null;
+  for (const key of Object.keys(sections)) {
+    if (key === '_intro') continue;
+    const lowered = key.toLowerCase();
+    for (const kw of keywords) {
+      if (lowered.includes(kw.toLowerCase())) {
+        const content = sections[key];
+        if (content && content.length > 30) return content;
+      }
+    }
+  }
+  return null;
+}
+
+function trimText(text, maxSentences = 4, maxChars = 600) {
+  if (!text) return null;
+  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+  let out = sentences.slice(0, maxSentences).join(' ').trim();
+  if (out.length > maxChars) {
+    out = out.slice(0, maxChars).replace(/\s+\S*$/, '') + '…';
+  }
+  return out;
+}
+
+function capitalize(s) {
+  if (!s) return s;
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function getLoadingSections() {
+  const labels = ['Range & Habitat','Key Anatomy','Prevalence in Georgia','Ecological Interactions','Human Threats','Intervention Strategy'];
+  const pair = (a,b) => `<div class="two-col">
+    <div class="section-card"><div class="section-header"><div class="section-title">${a}</div></div><div class="section-loading"><div class="spinner"></div> Loading…</div></div>
+    <div class="section-card"><div class="section-header"><div class="section-title">${b}</div></div><div class="section-loading"><div class="spinner"></div> Loading…</div></div>
+  </div>`;
+  return pair(labels[0],labels[1]) + pair(labels[2],labels[3]) + pair(labels[4],labels[5]);
+}
+
+// =================== SECTION RENDERERS ===================
+
+function renderRangeSection(taxon, wikiSections) {
+  const parts = [];
+
+  const listedTaxa = taxon.listed_taxa || [];
+  const gaListed = listedTaxa.find(lt => lt.place?.id === GEORGIA_PLACE_ID);
+  if (gaListed?.establishment_means) {
+    parts.push(`<i class="label">Status in Georgia</i>${capitalize(gaListed.establishment_means)}`);
+  } else if (taxon.establishment_means?.establishment_means) {
+    parts.push(`<i class="label">Establishment</i>${capitalize(taxon.establishment_means.establishment_means)}`);
+  }
+
+  const wikiText = findSection(wikiSections, ['distribution and habitat','habitat and distribution','distribution','range','habitat','geographic']);
+  if (wikiText) {
+    parts.push(`<i class="label">Range & Habitat</i>${trimText(wikiText)}`);
+  } else if (wikiSections?._intro) {
+    parts.push(trimText(wikiSections._intro, 3));
+  } else {
+    parts.push('Detailed range information is not available for this species. Check the iNaturalist observation map below to see where it has been sighted in Georgia.');
+  }
+  return parts.join('');
+}
+
+function renderAnatomySection(taxon, wikiSections) {
+  const wikiText = findSection(wikiSections, ['description','anatomy','morphology','characteristics','physical description','identification','appearance']);
+  if (wikiText) return trimText(wikiText, 4, 700);
+  if (wikiSections?._intro) return trimText(wikiSections._intro, 3);
+  return 'Detailed anatomy information is not available. Physical traits can be explored through photos on iNaturalist.';
+}
+
+function renderPrevalenceSection(taxon, gaObsCount) {
+  const globalCount = taxon.observations_count || 0;
+  const gaRatio = globalCount > 0 ? (gaObsCount / globalCount) : 0;
+
+  let abundanceLabel, abundanceDesc;
+  if (gaObsCount === 0) {
+    abundanceLabel = 'No Georgia records';
+    abundanceDesc = 'This species has no verified iNaturalist observations in Georgia yet.';
+  } else if (gaObsCount < 10) {
+    abundanceLabel = 'Rare';
+    abundanceDesc = 'Very few observations recorded in Georgia — this species may be uncommon, cryptic, or at the edge of its range.';
+  } else if (gaObsCount < 100) {
+    abundanceLabel = 'Uncommon';
+    abundanceDesc = 'A modest number of observations — present but not frequently documented.';
+  } else if (gaObsCount < 1000) {
+    abundanceLabel = 'Common';
+    abundanceDesc = 'Regularly observed across Georgia by citizen scientists.';
+  } else if (gaObsCount < 10000) {
+    abundanceLabel = 'Very Common';
+    abundanceDesc = 'Frequently encountered and well-documented throughout Georgia.';
+  } else {
+    abundanceLabel = 'Abundant';
+    abundanceDesc = 'One of the most commonly observed species in Georgia.';
+  }
+
+  const barPct = gaObsCount > 0 ? Math.min(100, (Math.log10(gaObsCount + 1) / 5) * 100) : 0;
+
+  return `
+    <div><b>${abundanceLabel}</b> · ${abundanceDesc}</div>
+    <i class="label">iNaturalist Observations in Georgia</i>
+    <b>${gaObsCount.toLocaleString()}</b> verified observations${globalCount ? ` <span style="opacity:0.7;">· ${(gaRatio*100).toFixed(1)}% of global sightings</span>` : ''}
+    <div class="prevalence-bar"><div class="prevalence-fill" style="width:${barPct}%"></div></div>
+  `;
+}
+
+function renderInteractionsSection(taxon, wikiSections) {
+  const parts = [];
+  const ecol = findSection(wikiSections, ['ecology','behavior','behaviour']);
+  const diet = findSection(wikiSections, ['diet','feeding','food','prey']);
+  const pred = findSection(wikiSections, ['predator']);
+  const repro = findSection(wikiSections, ['reproduction','life cycle','breeding']);
+
+  if (ecol) parts.push(`<i class="label">Ecology & Behavior</i>${trimText(ecol, 3, 450)}`);
+  if (diet && !ecol) parts.push(`<i class="label">Diet & Feeding</i>${trimText(diet, 3, 450)}`);
+  else if (diet && ecol) parts.push(`<i class="label">Diet</i>${trimText(diet, 2, 300)}`);
+  if (pred) parts.push(`<i class="label">Predators</i>${trimText(pred, 2, 300)}`);
+  if (repro && parts.length < 2) parts.push(`<i class="label">Life Cycle</i>${trimText(repro, 2, 350)}`);
+
+  if (parts.length === 0) {
+    return 'Detailed ecological interaction data is not available. View iNaturalist observations for field notes from other naturalists.';
+  }
+  return parts.join('');
+}
+
+function renderThreatsSection(taxon, wikiSections) {
+  const parts = [];
+  const cs = taxon.conservation_status;
+
+  let threatLevel = 'unknown';
+  if (cs) {
+    const status = (cs.status_name || cs.status || '').toLowerCase();
+    if (/endanger|critical|threatened|vulnerable/.test(status)) threatLevel = 'high';
+    else if (/near threatened|concern/.test(status)) threatLevel = 'medium';
+    else if (/least concern|stable|secure/.test(status)) threatLevel = 'low';
+    parts.push(`<i class="label">Conservation Status</i><b>${cs.status_name || cs.status}</b>${cs.authority ? ` <span style="opacity:0.7;">(${cs.authority})</span>` : ''}`);
+  }
+
+  const threatText = findSection(wikiSections, ['threats','declin','human impact']);
+  const conservText = findSection(wikiSections, ['conservation']);
+
+  if (threatText) {
+    parts.push(`<i class="label">Known Threats</i>${trimText(threatText, 3, 450)}`);
+  } else if (conservText) {
+    parts.push(`<i class="label">Conservation Context</i>${trimText(conservText, 3, 450)}`);
+  } else if (!cs) {
+    parts.push('<i class="label">Common Regional Threats</i>Common threats to Georgia wildlife include habitat loss from development, climate change, pollution, invasive species, and pesticide exposure.');
+  }
+
+  return `
+    <div class="threat-bar">
+      <div class="threat-dot ${threatLevel}"></div>
+      <span style="font-size:0.72rem;color:var(--sage);text-transform:uppercase;letter-spacing:0.08em;">${threatLevel === 'unknown' ? 'Status unclear' : threatLevel + ' threat level'}</span>
+    </div>
+    ${parts.join('')}`;
+}
+
+function renderInterventionSection(taxon, wikiSections) {
+  const conservText = findSection(wikiSections, ['conservation','protection','recovery','management']);
+  if (conservText) return trimText(conservText, 4, 600);
+
+  const cs = taxon.conservation_status;
+  const status = cs ? (cs.status_name || cs.status || '').toLowerCase() : '';
+
+  if (/endanger|critical/.test(status)) {
+    return `This species is at significant risk. Conservation efforts typically focus on habitat protection, legal safeguards (such as the Endangered Species Act), captive breeding programs, and targeted habitat restoration. Individuals can help by supporting land conservancies, reporting sightings to iNaturalist and Georgia DNR, and advocating for habitat-friendly policies.`;
+  }
+  if (/threatened|vulnerable/.test(status)) {
+    return `This species faces real threats but is not critically endangered. Key strategies include habitat preservation, reducing pollution and pesticide use, controlling invasive competitors, and population monitoring via citizen-science platforms. Georgia DNR's Wildlife Resources Division tracks many such species.`;
+  }
+  if (/near threatened|concern/.test(status)) {
+    return `While not currently at high risk, this species warrants monitoring. You can help by maintaining native plantings, reducing pesticide use, and reporting observations to iNaturalist to build long-term population data.`;
+  }
+  return `General conservation actions that benefit Georgia wildlife: plant native species, avoid pesticides, preserve natural habitat on your property, support organizations like the Georgia Conservancy and The Nature Conservancy of Georgia, and contribute observations to citizen-science platforms like iNaturalist.`;
+}
+
+function renderModalSections(taxon, gaObsCount, wikiSections) {
+  const container = document.getElementById('modalSections');
+  container.innerHTML = `
+    <div class="two-col">
+      <div class="section-card">
+        <div class="section-header"><div class="section-icon">🗺</div><div class="section-title">Range & Habitat</div></div>
+        <div class="section-body">${renderRangeSection(taxon, wikiSections)}</div>
+      </div>
+      <div class="section-card">
+        <div class="section-header"><div class="section-icon">🔬</div><div class="section-title">Key Anatomy & Structures</div></div>
+        <div class="section-body">${renderAnatomySection(taxon, wikiSections)}</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="section-card">
+        <div class="section-header"><div class="section-icon">📍</div><div class="section-title">Prevalence in Georgia</div></div>
+        <div class="section-body">${renderPrevalenceSection(taxon, gaObsCount)}</div>
+      </div>
+      <div class="section-card">
+        <div class="section-header"><div class="section-icon">🌐</div><div class="section-title">Ecological Interactions</div></div>
+        <div class="section-body">${renderInteractionsSection(taxon, wikiSections)}</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="section-card">
+        <div class="section-header"><div class="section-icon">⚠️</div><div class="section-title">Human Threats</div></div>
+        <div class="section-body">${renderThreatsSection(taxon, wikiSections)}</div>
+      </div>
+      <div class="section-card">
+        <div class="section-header"><div class="section-icon">🛡</div><div class="section-title">Intervention Strategy</div></div>
+        <div class="section-body">${renderInterventionSection(taxon, wikiSections)}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderModalFooter(taxon, gaObsCount) {
+  const wikiUrl = taxon.wikipedia_url;
+  document.getElementById('modalFooter').innerHTML = `
+    <div class="ext-link obs-badge">📍 ${gaObsCount.toLocaleString()} Georgia observations</div>
+    <a class="ext-link amber" href="https://www.inaturalist.org/taxa/${taxon.id}" target="_blank" rel="noopener">🔗 iNaturalist</a>
+    ${wikiUrl ? `<a class="ext-link green" href="${wikiUrl}" target="_blank" rel="noopener">📖 Wikipedia</a>` : ''}
+    <a class="ext-link green" href="https://www.inaturalist.org/observations?taxon_id=${taxon.id}&place_id=${GEORGIA_PLACE_ID}&view=map" target="_blank" rel="noopener">🗺 GA Sightings Map</a>
+  `;
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModalOnOverlay(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') search();
+});
+</script>
+</body>
+</html>
