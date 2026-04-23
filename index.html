@@ -352,6 +352,177 @@
     border-radius: 3px;
     transition: width 0.6s ease;
   }
+
+  /* ============ LAYOUT + SIDEBAR ============ */
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    max-width: 1500px;
+    margin: 0 auto;
+    gap: 0;
+  }
+
+  .sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    padding: 1.5rem 1rem 3rem 1.5rem;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    max-height: 100vh;
+    overflow-y: auto;
+    border-right: 1px solid rgba(138,170,112,0.15);
+  }
+
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb { background: rgba(138,170,112,0.3); border-radius: 3px; }
+
+  .sidebar-header {
+    padding: 0.5rem 0.25rem 1.25rem;
+    border-bottom: 1px solid rgba(138,170,112,0.2);
+    margin-bottom: 1.25rem;
+  }
+
+  .sidebar-eyebrow {
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebar-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.1;
+    font-style: italic;
+  }
+
+  .sidebar-sub {
+    margin-top: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--mist);
+    opacity: 0.6;
+    line-height: 1.5;
+  }
+
+  .sidebar-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .sidebar-card {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.7rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(138,170,112,0.15);
+    border-left: 3px solid var(--amber);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    animation: fadeUp 0.4s ease both;
+    align-items: center;
+  }
+
+  .sidebar-card:hover {
+    background: rgba(212,136,42,0.08);
+    border-color: rgba(212,136,42,0.35);
+    border-left-color: var(--amber);
+    transform: translateX(3px);
+  }
+
+  .sidebar-thumb {
+    width: 56px; height: 56px;
+    border-radius: 6px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: rgba(0,0,0,0.2);
+  }
+
+  .sidebar-thumb-placeholder {
+    width: 56px; height: 56px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #1a2e1a, #2a3d2a);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+  }
+
+  .sidebar-card-body { min-width: 0; flex: 1; }
+
+  .sidebar-card-tag {
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 500;
+    margin-bottom: 0.15rem;
+  }
+
+  .sidebar-card-common {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.15;
+    margin-bottom: 0.1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sidebar-card-sci {
+    font-size: 0.72rem;
+    color: var(--sage);
+    font-style: italic;
+    opacity: 0.85;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .main-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .curated-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 4px;
+    background: rgba(212,136,42,0.15);
+    border: 1px solid rgba(212,136,42,0.35);
+    color: var(--amber);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 900px) {
+    .layout { flex-direction: column; }
+    .sidebar {
+      width: 100%;
+      position: static;
+      max-height: none;
+      border-right: none;
+      border-bottom: 1px solid rgba(138,170,112,0.15);
+      padding: 1.5rem 1rem;
+    }
+    .sidebar-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 0.75rem;
+    }
+  }
 </style>
 </head>
 <body>
@@ -362,6 +533,16 @@
   <div class="header-sub">Explore the flora & fauna of the Peach State</div>
 </header>
 
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-eyebrow">✦ Featured Collection</div>
+    <div class="sidebar-title">My Researched<br>Species</div>
+    <div class="sidebar-sub">A curated selection with in-depth field notes tailored to Atlanta, GA.</div>
+  </div>
+  <div class="sidebar-cards" id="sidebarCards"></div>
+</aside>
+<main class="main-content">
 <div class="search-section">
   <div class="search-row">
     <input class="search-input" id="searchInput" type="text" placeholder="Search species, e.g. white-tailed deer, eastern box turtle…" />
@@ -382,6 +563,8 @@
 <div class="section-label" id="sectionLabel">Most Observed in Georgia</div>
 <div class="status" id="status"></div>
 <div class="grid" id="grid"></div>
+</main>
+</div>
 
 <div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
   <div class="modal" id="modal">
@@ -398,7 +581,208 @@
 const GEORGIA_PLACE_ID = 12;
 let currentTaxa = 'all';
 
-window.addEventListener('DOMContentLoaded', () => loadTopSpecies());
+// =================== RESEARCHED SPECIES (CURATED) ===================
+const RESEARCHED_SPECIES = [
+  {
+    searchQuery: 'Stellaria media',
+    commonName: 'Common Chickweed',
+    scientificName: 'Stellaria media',
+    emoji: '🌱',
+    tag: 'Non-native · Plant',
+    threatLevel: 'low',
+    threatLabel: 'Not at risk (naturalized weed)',
+    range: `<i class="label">Native & Introduced Range</i>Native to Europe and western Asia. Now naturalized globally and widespread throughout Georgia.<i class="label">Atlanta Habitat</i>A cool-season winter annual in the Southeast, germinating in fall and thriving from October through May. Found in lawns, garden beds, disturbed soil, agricultural fields, roadsides, and moist shaded ground. Prefers nutrient-rich, well-watered soils.`,
+    anatomy: `Low-sprawling herbaceous annual, 4–16 inches long with delicate weak stems. <b>Diagnostic feature:</b> a single line of fine white hairs runs along one side of the stem, switching sides at each leaf node — unique among common weeds. Oval, opposite leaves with smooth margins. Small white flowers with 5 deeply-cleft petals that appear as 10 (the green sepals are longer than the petals). Leaves exhibit <b>nyctinasty</b>, folding over the growing tip at night. Shallow fibrous roots allow easy hand-pulling.`,
+    prevalence: `<b>Extremely common.</b> One of the most frequently encountered cool-season weeds in metro Atlanta lawns, landscape beds, and disturbed ground. Abundant from late fall through mid-spring in virtually every residential neighborhood, park, and unmanaged lot.`,
+    interactions: `<i class="label">Wildlife Value</i>Seeds are eaten by ground-foraging songbirds including finches, sparrows, and juncos — the plant's common name reflects its popularity with chickens. Small flowers attract tiny native bees, hoverflies, and other early-season pollinators when few flowers are blooming.<i class="label">Human & Crop Use</i>Edible raw or cooked — historically used as a spring potherb and valued for its high vitamin C, iron, and calcium content. Competes directly with turfgrass and cool-season crops like lettuce, spinach, and brassicas.<i class="label">Host Plant</i>Supports caterpillars of a handful of moth species.`,
+    threats: `<i class="label">Conservation Status</i>No conservation concern — this is a naturalized agricultural and lawn weed, not a threatened species. The relationship is reversed: humans actively target chickweed.<i class="label">How Humans Affect It</i>Targeted by herbicides, tillage, and mechanical removal in agriculture and turf. Its presence is an indicator of soil disturbance.`,
+    intervention: `<i class="label">Management (not conservation)</i>Chickweed requires management rather than protection. In Atlanta:<br>• <b>Hand-pull before flowering</b> — the shallow roots release easily and prevent seed production.<br>• <b>Mulch garden beds 2–3 inches deep</b> to block germination.<br>• <b>Maintain dense turf</b> — mow at 3+ inches and overseed fescue in fall to shade out seedlings.<br>• <b>Apply pre-emergent herbicides</b> in early fall (September–October) in heavily infested lawns.<br>• In naturalized areas, encourage native winter annuals like <i>Claytonia virginica</i> (spring beauty) to occupy the same niche.`
+  },
+  {
+    searchQuery: 'Amynthas agrestis',
+    commonName: 'Asian Jumping Worm',
+    scientificName: 'Amynthas agrestis',
+    emoji: '🪱',
+    tag: 'Invasive · Annelid',
+    threatLevel: 'high',
+    threatLabel: 'Itself an invasive ecological threat',
+    range: `<i class="label">Native Range</i>Japan, Korea, and eastern Russia.<i class="label">Invasive Range</i>Established across the eastern United States including all of Georgia. First documented in GA around 2013 and spreading rapidly. Known throughout metro Atlanta in gardens, nurseries, mulched landscapes, and increasingly in forest preserves and state parks.<i class="label">Habitat</i>Lives in the top 2–4 inches of soil and leaf litter — does not burrow deeply like European earthworms.`,
+    anatomy: `Adults are 4–8 inches long with a dark gray-to-brown body carrying a distinctive <b>iridescent metallic sheen</b>. The <b>key identification feature</b> is the clitellum (reproductive band): smooth, cream-white or milky, and <b>completely encircling</b> the body — unlike European earthworms whose clitellum is saddle-shaped and raised. Highly muscular and notorious for thrashing and flipping violently when disturbed (earning names like "snake worm" and "crazy worm"). Can <b>autotomize their tail</b> as a defense mechanism. Reproduce asexually via parthenogenesis, so a single individual can start a population.`,
+    prevalence: `<b>Established and spreading throughout metro Atlanta.</b> Increasingly documented in residential gardens, commercial landscaping, and forest preserves. A single sighting typically indicates a substantial underground population due to rapid parthenogenic reproduction and cocoons being easily moved in soil and mulch.`,
+    interactions: `<i class="label">Devastating Impact on Forests</i>Consumes leaf litter 3–4× faster than European earthworms, <b>eliminating the forest duff layer</b> that salamanders, ground-nesting birds, invertebrates, and native spring wildflowers (trilliums, trout lilies, bloodroot) depend on.<i class="label">Soil Disruption</i>Converts soil into a distinctive <b>coffee-grounds-like granular texture</b>, depleting organic matter and altering nutrient cycling. Disrupts mycorrhizal fungal networks that trees depend on for nutrient uptake.<i class="label">Food Web</i>Provides little food value to native predators and outcompetes beneficial native soil fauna.`,
+    threats: `<i class="label">The Species IS the Threat</i>Unlike the other species in this collection, jumping worms are themselves the ecological concern — they are a destructive invasive with no natural predators in North America.<i class="label">Primary Spread Vectors</i>• Contaminated mulch and compost<br>• Potted plants and nursery stock<br>• Soil moved between properties<br>• Use as fishing bait<br>• Shared garden tools and footwear<br><i class="label">Climate</i>Warming winters may allow further northern expansion and longer active seasons.`,
+    intervention: `<i class="label">Prevention is the Only Effective Strategy</i>Eradication is nearly impossible once established, so Atlanta residents should focus on <b>containment and prevention</b>:<br>• <b>Inspect all mulch and plants</b> before purchase — look for worms or coffee-grounds soil texture.<br>• <b>Buy heat-treated compost</b> and certified worm-free nursery stock.<br>• <b>Never move soil</b> between gardens, even within your own yard.<br>• <b>Never use jumping worms as fishing bait</b> — this is a major dispersal route.<br>• <b>Clean boots, tires, and tools</b> after visiting natural areas or other gardens.<br>• <b>Solarize suspect soil</b> under clear plastic in summer — cocoons die at 104°F for 3+ days.<br>• <b>Hand-collect adults</b> and dispose in sealed bags to landfill — do not compost.<br>• <b>Report sightings</b> to iNaturalist and Georgia DNR to help track spread.`
+  },
+  {
+    searchQuery: 'Tamias striatus',
+    commonName: 'Eastern Chipmunk',
+    scientificName: 'Tamias striatus',
+    emoji: '🐿',
+    tag: 'Native · Mammal',
+    threatLevel: 'low',
+    threatLabel: 'Least Concern — stable',
+    range: `<i class="label">Native Range</i>Eastern North America from southern Canada south to northern Georgia and Alabama, west to the Great Plains.<i class="label">Georgia Distribution</i>Largely restricted to the <b>northern half of the state</b> — common in the Piedmont (including Atlanta) and Blue Ridge Mountains, but mostly absent from the Coastal Plain below the Fall Line.<i class="label">Habitat</i>Deciduous and mixed hardwood forests with abundant logs, rock piles, stone walls, brush, and understory cover. Readily adapts to wooded suburbs and urban parks.`,
+    anatomy: `Small ground squirrel, 8–11 inches long including a 3–4 inch tail, weighing 2–5 ounces. Reddish-brown back with <b>five distinctive dark stripes</b> (three down the back, two bordered in white on the face). White underside. <b>Large expandable cheek pouches</b> can hold up to 70 sunflower seeds at once — allowing efficient food caching in a single trip. Strong curved claws for digging extensive burrow systems up to 30 feet long. <b>Exceptional spatial memory</b> for relocating scatter-hoarded seed caches. Enters torpor (not true hibernation) in winter, waking periodically to eat from underground caches.`,
+    prevalence: `<b>Common and widely observed throughout Atlanta's wooded neighborhoods and parks</b> — frequently seen at Piedmont Park, Chastain Park, Morningside Nature Preserve, Cascade Springs, and the Atlanta BeltLine's wooded stretches. Populations are stable and they adapt well to suburban landscapes with mature trees, rock walls, and seed sources like bird feeders.`,
+    interactions: `<i class="label">Ecosystem Engineer</i>Major seed disperser for oaks, hickories, beeches, and maples through <b>scatter-hoarding</b> — many cached seeds are forgotten and germinate, effectively planting the next generation of forest.<i class="label">Predators</i>Red-tailed hawks, barred owls, Cooper's hawks, rat snakes, copperheads, red foxes, coyotes, and — significantly in Atlanta — domestic cats.<i class="label">Diet</i>Omnivorous: seeds, nuts, acorns, fruits, fungi, insects, bird eggs, and occasionally small vertebrates.<i class="label">Soil & Fungi</i>Burrows aerate soil. Dispersal of mycorrhizal fungal spores through droppings benefits forest tree health.`,
+    threats: `<i class="label">Conservation Status</i>IUCN: Least Concern — populations are stable range-wide.<i class="label">Local Threats in Atlanta</i>• <b>Outdoor domestic cats</b> — by far the single largest predation threat to urban chipmunks.<br>• <b>Habitat loss and fragmentation</b> as wooded lots are cleared for development.<br>• <b>Vehicle strikes</b> along suburban roads.<br>• <b>Rodenticides</b> intended for rats and mice can secondarily poison chipmunks and the hawks and owls that prey on them.<br>• <b>Climate change</b> may affect mast production of the oaks and hickories they depend on.`,
+    intervention: `<i class="label">Highest-Impact Action</i><b>Keep domestic cats indoors or in catios.</b> Free-roaming cats kill an estimated 12+ billion small mammals annually in the US — this is the single most impactful thing any Atlanta resident can do for chipmunks and urban wildlife generally.<i class="label">Habitat Support</i>• Leave fallen logs, rock piles, and brushy corners in your yard.<br>• Plant and preserve native <b>oaks, hickories, and beeches</b> — their primary food sources.<br>• Maintain stone walls and native understory shrubs.<i class="label">Avoid Harm</i>• Eliminate rodenticide use — alternatives include snap traps and exclusion.<br>• <b>Do not feed chipmunks</b> — habituation concentrates them and attracts predators.<br>• Support Atlanta's tree canopy initiatives and connected greenspace corridors (BeltLine, Chattahoochee RiverLands).`
+  },
+  {
+    searchQuery: 'Veronica persica',
+    commonName: 'Persian Speedwell',
+    scientificName: 'Veronica persica',
+    emoji: '💠',
+    tag: 'Non-native · Plant',
+    threatLevel: 'low',
+    threatLabel: 'Not at risk (naturalized weed)',
+    range: `<i class="label">Native Range</i>The Caucasus region, northern Iran, and southwestern Asia.<i class="label">Introduced Range</i>Introduced to Europe in the early 1800s and subsequently to North America. Now widely naturalized throughout temperate regions globally, including throughout Georgia.<i class="label">Atlanta Habitat</i>Lawns, flower beds, cultivated fields, roadsides, sidewalk cracks, and disturbed ground. Prefers moist, fertile, sunny to partially shaded sites. A winter annual that germinates in fall.`,
+    anatomy: `Small prostrate or creeping winter annual, 4–12 inches long. Oval to heart-shaped, scalloped/toothed leaves roughly ½ inch long — opposite on lower stems, alternate on flower-bearing portions. <b>Distinctive small (¼–½ inch) four-petaled flowers</b> with three light blue petals streaked with darker blue veins and one smaller white petal, giving the "bird's-eye" appearance that earns its other common name. Flowers are borne singly on long pedicels from leaf axils. <b>Heart-shaped two-lobed seed capsules.</b> Hairy stems and leaves. Shallow fibrous root system.`,
+    prevalence: `<b>Abundant cool-season weed</b> throughout Atlanta lawns, landscape beds, and disturbed ground. Blooms from late winter through mid-spring (February–May), often <b>carpeting lawns in pale blue</b> during that window — one of the first wildflower-like displays many Atlantans notice each year.`,
+    interactions: `<i class="label">Early-Season Pollinator Resource</i>Provides valuable <b>early-spring nectar and pollen</b> for small native bees (especially <i>Lasioglossum</i> sweat bees and <i>Andrena</i> mining bees), hoverflies, and bee flies at a time when few other flowers are open.<i class="label">Seed Dispersal</i>Seeds carry elaiosomes and are dispersed by <b>ants (myrmecochory)</b>, as well as by rainwater splash and soil movement.<i class="label">Agricultural Role</i>Can serve as an alternate host for some plant viruses affecting vegetable crops.<i class="label">Competition</i>Forms dense mats that compete with turfgrass and small native spring ephemerals for early-season resources.`,
+    threats: `<i class="label">Conservation Status</i>No conservation concern — this is a naturalized weed, not a protected species.<i class="label">Ecological Concern</i>Can outcompete native spring ephemerals in disturbed natural areas adjacent to lawns and developed land. Treated as a management target rather than a conservation subject.`,
+    intervention: `<i class="label">Management + Reconsideration</i>Like chickweed, Persian speedwell requires management rather than protection — but it also deserves a second thought before removal:<br>• <b>Hand-pull or hoe in early spring</b> before seed capsules mature; shallow roots release easily.<br>• <b>Mulch garden beds</b> to suppress germination.<br>• <b>Mow turf at 3+ inches</b> to shade out seedlings.<br>• <b>Pre-emergent herbicides in fall</b> can reduce emergence in problem areas.<i class="label">A Gentler Alternative</i>Some Atlanta gardeners <b>tolerate or welcome</b> Persian speedwell for its pollinator value and early color in less-managed lawn areas. Where possible, consider replacing it with <b>native alternatives</b> that offer the same benefits: bluets (<i>Houstonia caerulea</i>), spring beauty (<i>Claytonia virginica</i>), or common blue violet (<i>Viola sororia</i>).`
+  }
+];
+
+let researchedSpeciesData = [];
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadTopSpecies();
+  loadResearchedSpecies();
+});
+
+async function loadResearchedSpecies() {
+  const container = document.getElementById('sidebarCards');
+  // Render skeleton first
+  container.innerHTML = RESEARCHED_SPECIES.map(s => `
+    <div class="sidebar-card" data-loading="true">
+      <div class="sidebar-thumb-placeholder">${s.emoji}</div>
+      <div class="sidebar-card-body">
+        <div class="sidebar-card-tag">${s.tag}</div>
+        <div class="sidebar-card-common">${s.commonName}</div>
+        <div class="sidebar-card-sci">${s.scientificName}</div>
+      </div>
+    </div>`).join('');
+
+  // Fetch iNat data for each in parallel
+  const results = await Promise.all(RESEARCHED_SPECIES.map(async (curated) => {
+    try {
+      const res = await fetch(`https://api.inaturalist.org/v1/taxa?q=${encodeURIComponent(curated.searchQuery)}&per_page=1&rank=species`);
+      const data = await res.json();
+      return { curated, taxon: data.results?.[0] || null };
+    } catch (e) {
+      return { curated, taxon: null };
+    }
+  }));
+
+  researchedSpeciesData = results;
+  renderSidebarCards();
+}
+
+function renderSidebarCards() {
+  const container = document.getElementById('sidebarCards');
+  container.innerHTML = '';
+  researchedSpeciesData.forEach((entry, i) => {
+    const { curated, taxon } = entry;
+    const img = taxon?.default_photo?.square_url || taxon?.default_photo?.medium_url;
+
+    const card = document.createElement('div');
+    card.className = 'sidebar-card';
+    card.style.animationDelay = `${i * 0.08}s`;
+    card.onclick = () => openCuratedModal(entry);
+
+    card.innerHTML = `
+      ${img
+        ? `<img class="sidebar-thumb" src="${img}" alt="${curated.commonName}" onerror="this.outerHTML='<div class=\\'sidebar-thumb-placeholder\\'>${curated.emoji}</div>'">`
+        : `<div class="sidebar-thumb-placeholder">${curated.emoji}</div>`}
+      <div class="sidebar-card-body">
+        <div class="sidebar-card-tag">${curated.tag}</div>
+        <div class="sidebar-card-common">${curated.commonName}</div>
+        <div class="sidebar-card-sci">${curated.scientificName}</div>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+async function openCuratedModal(entry) {
+  const { curated, taxon } = entry;
+  const overlay = document.getElementById('modalOverlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  const heroImg = taxon?.default_photo?.large_url || taxon?.default_photo?.medium_url || taxon?.default_photo?.url;
+  document.getElementById('modalHero').innerHTML = `
+    ${heroImg
+      ? `<img src="${heroImg}" alt="${curated.commonName}" onerror="this.outerHTML='<div class=\\'modal-hero-placeholder\\'>${curated.emoji}</div>'">`
+      : `<div class="modal-hero-placeholder">${curated.emoji}</div>`}
+    <div class="modal-hero-overlay"></div>
+    <div class="modal-title-block">
+      <div class="modal-common">${curated.commonName}</div>
+      <div class="modal-sci">${curated.scientificName}</div>
+    </div>`;
+
+  // Build sections immediately from curated data
+  const sections = document.getElementById('modalSections');
+  sections.innerHTML = `
+    <div class="curated-badge">✦ Featured Research Species</div>
+    <div class="two-col">
+      <div class="section-card">
+        <div class="section-header"><div class="section-icon">🗺</div><div class="section-title">Range & Habitat</div></div>
+        <div class="section-body">${curated.range}</div>
+      </div>
+      <div class="section-card">
+        <div class="section-header"><div class="section-icon">🔬</div><div class="section-title">Key Anatomy & Structures</div></div>
+        <div class="section-body">${curated.anatomy}</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="section-card">
+        <div class="section-header"><div class="section-icon">📍</div><div class="section-title">Prevalence in Atlanta</div></div>
+        <div class="section-body" id="curatedPrevalence">${curated.prevalence}<div style="margin-top:0.8rem;padding-top:0.8rem;border-top:1px solid rgba(138,170,112,0.15);font-size:0.82rem;opacity:0.8;">Loading live Georgia observation count…</div></div>
+      </div>
+      <div class="section-card">
+        <div class="section-header"><div class="section-icon">🌐</div><div class="section-title">Ecological Interactions</div></div>
+        <div class="section-body">${curated.interactions}</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="section-card">
+        <div class="section-header"><div class="section-icon">⚠️</div><div class="section-title">Human Threats</div></div>
+        <div class="section-body">
+          <div class="threat-bar">
+            <div class="threat-dot ${curated.threatLevel}"></div>
+            <span style="font-size:0.72rem;color:var(--sage);text-transform:uppercase;letter-spacing:0.08em;">${curated.threatLabel}</span>
+          </div>
+          ${curated.threats}
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-header"><div class="section-icon">🛡</div><div class="section-title">Intervention Strategy</div></div>
+        <div class="section-body">${curated.intervention}</div>
+      </div>
+    </div>`;
+
+  document.getElementById('modalFooter').innerHTML = '';
+
+  // Fetch live GA observation count in the background
+  if (taxon) {
+    const gaCount = await fetchGAObsCount(taxon.id);
+    const prevEl = document.getElementById('curatedPrevalence');
+    if (prevEl) {
+      const barPct = gaCount > 0 ? Math.min(100, (Math.log10(gaCount + 1) / 5) * 100) : 0;
+      prevEl.innerHTML = `${curated.prevalence}
+        <i class="label">Live iNaturalist Data for Georgia</i>
+        <b>${gaCount.toLocaleString()}</b> verified observations
+        <div class="prevalence-bar"><div class="prevalence-fill" style="width:${barPct}%"></div></div>`;
+    }
+    document.getElementById('modalFooter').innerHTML = `
+      <div class="ext-link obs-badge">📍 ${gaCount.toLocaleString()} Georgia observations</div>
+      <a class="ext-link amber" href="https://www.inaturalist.org/taxa/${taxon.id}" target="_blank" rel="noopener">🔗 iNaturalist</a>
+      ${taxon.wikipedia_url ? `<a class="ext-link green" href="${taxon.wikipedia_url}" target="_blank" rel="noopener">📖 Wikipedia</a>` : ''}
+      <a class="ext-link green" href="https://www.inaturalist.org/observations?taxon_id=${taxon.id}&place_id=${GEORGIA_PLACE_ID}&view=map" target="_blank" rel="noopener">🗺 GA Sightings Map</a>`;
+  }
+}
 
 function setTaxa(btn, taxa) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
